@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.io.{ByteArrayInputStream, InputStream, OutputStream, SequenceInputStream}
 import java.nio.channels.{

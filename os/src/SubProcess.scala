@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.io._
 import java.util.concurrent.TimeUnit
@@ -206,7 +206,7 @@ object ProcessOutput{
   extends ProcessOutput {
     def redirectTo = ProcessBuilder.Redirect.PIPE
     def processOutput(out: => SubProcess.OutputStream) = Some{
-      new Runnable {def run(): Unit = os.Internals.transfer0(out, f)}
+      new Runnable {def run(): Unit = oslib.Internals.transfer0(out, f)}
     }
   }
 

@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.nio.file.attribute.{FileAttribute, PosixFilePermission, PosixFilePermissions}
 

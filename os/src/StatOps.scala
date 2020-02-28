@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.nio.file.{Files, LinkOption}
 import java.nio.file.attribute._
@@ -89,21 +89,21 @@ object mtime extends Function1[Path, Long]{
   *
   * Throws an exception if the file or folder does not exist
   */
-object stat extends Function1[os.Path, os.StatInfo]{
-  def apply(p: os.Path): os.StatInfo = apply(p, followLinks = true)
-  def apply(p: os.Path, followLinks: Boolean = true): os.StatInfo = {
+object stat extends Function1[oslib.Path, oslib.StatInfo]{
+  def apply(p: oslib.Path): oslib.StatInfo = apply(p, followLinks = true)
+  def apply(p: oslib.Path, followLinks: Boolean = true): oslib.StatInfo = {
     val opts = if (followLinks) Array[LinkOption]() else Array(LinkOption.NOFOLLOW_LINKS)
-    os.StatInfo.make(Files.readAttributes(p.wrapped, classOf[BasicFileAttributes], opts:_*))
+    oslib.StatInfo.make(Files.readAttributes(p.wrapped, classOf[BasicFileAttributes], opts:_*))
   }
 
   /**
     * Reads POSIX metadata for the given file: ownership and permissions data
     */
   object posix{
-    def apply(p: os.Path): os.PosixStatInfo = apply(p, followLinks = true)
-    def apply(p: os.Path, followLinks: Boolean = true): os.PosixStatInfo = {
+    def apply(p: oslib.Path): oslib.PosixStatInfo = apply(p, followLinks = true)
+    def apply(p: oslib.Path, followLinks: Boolean = true): oslib.PosixStatInfo = {
       val opts = if (followLinks) Array[LinkOption]() else Array(LinkOption.NOFOLLOW_LINKS)
-      os.PosixStatInfo.make(Files.readAttributes(p.wrapped, classOf[PosixFileAttributes], opts:_*))
+      oslib.PosixStatInfo.make(Files.readAttributes(p.wrapped, classOf[PosixFileAttributes], opts:_*))
     }
   }
 }

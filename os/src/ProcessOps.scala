@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.util.concurrent.{ArrayBlockingQueue, Semaphore, TimeUnit}
 
@@ -52,7 +52,7 @@ case class proc(command: Shellable*) {
            env: Map[String, String] = null,
            stdin: ProcessInput = Pipe,
            stdout: ProcessOutput = Pipe,
-           stderr: ProcessOutput = os.Inherit,
+           stderr: ProcessOutput = oslib.Inherit,
            mergeErrIntoOut: Boolean = false,
            timeout: Long = -1,
            check: Boolean = true,
@@ -64,12 +64,12 @@ case class proc(command: Shellable*) {
     val sub = spawn(
       cwd, env,
       stdin,
-      if (stdout ne os.Pipe) stdout
-      else os.ProcessOutput.ReadBytes(
+      if (stdout ne oslib.Pipe) stdout
+      else oslib.ProcessOutput.ReadBytes(
         (buf, n) => chunks.add(Left(new geny.Bytes(java.util.Arrays.copyOf(buf, n))))
       ),
-      if (stderr ne os.Pipe) stderr
-      else os.ProcessOutput.ReadBytes(
+      if (stderr ne oslib.Pipe) stderr
+      else oslib.ProcessOutput.ReadBytes(
         (buf, n) => chunks.add(Right(new geny.Bytes(java.util.Arrays.copyOf(buf, n))))
       ),
       mergeErrIntoOut,
@@ -102,7 +102,7 @@ case class proc(command: Shellable*) {
             env: Map[String, String] = null,
             stdin: ProcessInput = Pipe,
             stdout: ProcessOutput = Pipe,
-            stderr: ProcessOutput = os.Inherit,
+            stderr: ProcessOutput = oslib.Inherit,
             mergeErrIntoOut: Boolean = false,
             propagateEnv: Boolean = true): SubProcess = {
     val builder = new java.lang.ProcessBuilder()
@@ -115,7 +115,7 @@ case class proc(command: Shellable*) {
       else builder.environment().remove(k)
     }
 
-    builder.directory(Option(cwd).getOrElse(os.pwd).toIO)
+    builder.directory(Option(cwd).getOrElse(oslib.pwd).toIO)
 
     val commandChunks = command.flatMap(_.value)
     val commandStr = commandChunks.mkString(" ")

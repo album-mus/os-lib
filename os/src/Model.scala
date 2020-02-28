@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, LinkOption, Paths}

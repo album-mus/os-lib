@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import collection.JavaConverters._
 
@@ -217,7 +217,7 @@ object PathError{
   */
 sealed trait FilePath extends BasePath{
   def toNIO: java.nio.file.Path
-  def resolveFrom(base: os.Path): os.Path
+  def resolveFrom(base: oslib.Path): oslib.Path
 }
 object FilePath {
   def apply[T: PathConvertible](f0: T) = {
@@ -237,7 +237,7 @@ object FilePath {
   * segments can only occur at the left-end of the path, and
   * are collapsed into a single number [[ups]].
   */
-class RelPath private[os](segments0: Array[String], val ups: Int)
+class RelPath private[oslib](segments0: Array[String], val ups: Int)
   extends FilePath with BasePathImpl with SegmentedPath {
   def last = segments.last
   val segments: IndexedSeq[String] = segments0
@@ -272,7 +272,7 @@ class RelPath private[os](segments0: Array[String], val ups: Int)
     new SubPath(segments0)
   }
 
-  def resolveFrom(base: os.Path) = base / this
+  def resolveFrom(base: oslib.Path) = base / this
 }
 
 object RelPath {
@@ -303,7 +303,7 @@ object RelPath {
 /**
   * A relative path on the filesystem, without any `..` or `.` segments
   */
-class SubPath private[os](val segments0: Array[String])
+class SubPath private[oslib](val segments0: Array[String])
   extends FilePath with BasePathImpl with SegmentedPath {
   def last = segments.last
   val segments: IndexedSeq[String] = segments0
@@ -327,11 +327,11 @@ class SubPath private[os](val segments0: Array[String])
 
   def toNIO = java.nio.file.Paths.get(toString)
 
-  def resolveFrom(base: os.Path) = base / this
+  def resolveFrom(base: oslib.Path) = base / this
 }
 
 object SubPath {
-  private[os] def relativeTo0(segments0: Array[String], segments: IndexedSeq[String]): RelPath = {
+  private[oslib] def relativeTo0(segments0: Array[String], segments: IndexedSeq[String]): RelPath = {
 
     val commonPrefix = {
       val maxSize = scala.math.min(segments0.length, segments.length)
@@ -413,7 +413,7 @@ object Path {
 }
 
 trait ReadablePath{
-  def toSource: os.Source
+  def toSource: oslib.Source
   def getInputStream: java.io.InputStream
 }
 
@@ -421,7 +421,7 @@ trait ReadablePath{
   * An absolute path on the filesystem. Note that the path is
   * normalized and cannot contain any empty `""`, `"."` or `".."` segments
   */
-class Path private[os](val wrapped: java.nio.file.Path)
+class Path private[oslib](val wrapped: java.nio.file.Path)
   extends FilePath with ReadablePath with BasePathImpl {
   def toSource: SeekableSource =
     new SeekableSource.ChannelSource(java.nio.file.Files.newByteChannel(wrapped))
@@ -469,7 +469,7 @@ class Path private[os](val wrapped: java.nio.file.Path)
   def toIO: java.io.File = wrapped.toFile
   def toNIO: java.nio.file.Path = wrapped
 
-  def resolveFrom(base: os.Path) = this
+  def resolveFrom(base: oslib.Path) = this
 
   def getInputStream = java.nio.file.Files.newInputStream(wrapped)
 }

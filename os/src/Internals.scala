@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.io.{InputStream, OutputStream}
 import java.nio.file.Files

@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.io.InputStream
 
@@ -14,7 +14,7 @@ object ResourcePath{
   *
   * Classloaders are tricky: http://stackoverflow.com/questions/12292926
   */
-class ResourcePath private[os](val resRoot: ResourceRoot, segments0: Array[String])
+class ResourcePath private[oslib](val resRoot: ResourceRoot, segments0: Array[String])
   extends BasePathImpl with ReadablePath with SegmentedPath {
   def getInputStream = resRoot.getResourceAsStream(segments.mkString("/")) match{
     case null => throw ResourceNotFoundException(this)

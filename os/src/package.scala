@@ -1,5 +1,5 @@
 
-package object os{
+package object oslib {
   type Generator[+T] = geny.Generator[T]
   val Generator = geny.Generator
   implicit def GlobSyntax(s: StringContext): GlobInterpolator = new GlobInterpolator(s)
@@ -10,7 +10,7 @@ package object os{
   val root: Path = Path(java.nio.file.Paths.get(".").toAbsolutePath.getRoot)
 
   def resource(implicit resRoot: ResourceRoot = Thread.currentThread().getContextClassLoader) ={
-    os.ResourcePath.resource(resRoot)
+    oslib.ResourcePath.resource(resRoot)
   }
 
   /**
@@ -21,7 +21,7 @@ package object os{
   /**
    * The current working directory for this process.
    */
-  val pwd: Path = os.Path(java.nio.file.Paths.get(".").toAbsolutePath)
+  val pwd: Path = oslib.Path(java.nio.file.Paths.get(".").toAbsolutePath)
 
   val up: RelPath = RelPath.up
 

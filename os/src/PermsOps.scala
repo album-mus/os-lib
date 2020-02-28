@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.nio.file.{Files, LinkOption}
 import java.nio.file.attribute.{GroupPrincipal, PosixFileAttributeView, UserPrincipal}

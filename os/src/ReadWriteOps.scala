@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.io.{BufferedReader, InputStreamReader}
 import java.nio.ByteBuffer
@@ -96,7 +96,7 @@ object write{
     def outputStream(target: Path,
                      perms: PermSet = null,
                      createFolders: Boolean = false) = {
-      os.write.outputStream(
+      oslib.write.outputStream(
         target,
         perms,
         createFolders,
@@ -139,7 +139,7 @@ object write{
     def outputStream(target: Path,
                      perms: PermSet = null,
                      createFolders: Boolean = false) = {
-      os.write.outputStream(
+      oslib.write.outputStream(
         target,
         perms,
         createFolders,
@@ -295,7 +295,7 @@ object read extends Function1[ReadablePath, String]{
     def apply(p: ReadablePath, buffer: Array[Byte]): geny.Generator[(Array[Byte], Int)] = {
       new Generator[(Array[Byte], Int)] {
         def generate(handleItem: ((Array[Byte], Int)) => Generator.Action): Generator.Action = {
-          val is = os.read.inputStream(p)
+          val is = oslib.read.inputStream(p)
           try{
             var bufferOffset = 0
             var lastAction: Generator.Action = Generator.Continue

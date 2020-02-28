@@ -4,7 +4,7 @@
  * powerful and flexible enough to use in real applications to
  * perform filesystem operations
  */
-package os
+package oslib
 
 import java.nio.file.{Path => _, _}
 import java.nio.file.attribute.{FileAttribute, PosixFilePermission, PosixFilePermissions}
@@ -41,7 +41,7 @@ object makeDir extends Function1[Path, Unit]{
       // normally createDirectories blows up noisily, when really what most
       // people would want is for it to succeed since there is a (linked)
       // directory right there
-      if (os.isDir(path) && os.isLink(path) && acceptLinkedDirectory) () // do nothing
+      if (oslib.isDir(path) && oslib.isLink(path) && acceptLinkedDirectory) () // do nothing
       else if (perms == null) Files.createDirectories(path.wrapped)
       else {
         Files.createDirectories(
@@ -68,7 +68,7 @@ object move {
       def apply(from: Path) = {
         val dest = partialFunction(from)
         makeDir.all(dest/up)
-        os.move(from, dest, replaceExisting, atomicMove, createFolders)
+        oslib.move(from, dest, replaceExisting, atomicMove, createFolders)
       }
     }
 
@@ -119,7 +119,7 @@ object move {
               replaceExisting: Boolean = false,
               atomicMove: Boolean = false,
               createFolders: Boolean = false): Unit = {
-      os.remove.all(to)
+      oslib.remove.all(to)
       move.apply(from, to, replaceExisting, atomicMove, createFolders)
     }
   }
@@ -141,7 +141,7 @@ object copy {
       def apply(from: Path) = {
         val dest = partialFunction(from)
         makeDir.all(dest/up)
-        os.copy(from, dest, followLinks, replaceExisting, copyAttributes, createFolders)
+        oslib.copy(from, dest, followLinks, replaceExisting, copyAttributes, createFolders)
       }
     }
 
@@ -188,7 +188,7 @@ object copy {
               replaceExisting: Boolean = false,
               copyAttributes: Boolean = false,
               createFolders: Boolean = false): Unit = {
-      os.copy(from, to/from.last, followLinks, replaceExisting, copyAttributes, createFolders)
+      oslib.copy(from, to/from.last, followLinks, replaceExisting, copyAttributes, createFolders)
     }
   }
 
@@ -203,8 +203,8 @@ object copy {
               replaceExisting: Boolean = false,
               copyAttributes: Boolean = false,
               createFolders: Boolean = false): Unit = {
-      os.remove.all(to)
-      os.copy(from, to, followLinks, replaceExisting, copyAttributes, createFolders)
+      oslib.remove.all(to)
+      oslib.copy(from, to, followLinks, replaceExisting, copyAttributes, createFolders)
     }
   }
 }
@@ -289,8 +289,8 @@ object followLink extends Function1[Path, Option[Path]]{
 /**
   * Reads the destination that the given symbolic link is pointed to
   */
-object readLink extends Function1[Path, os.FilePath]{
-  def apply(src: Path): FilePath = os.FilePath(Files.readSymbolicLink(src.toNIO))
-  def absolute(src: Path): os.Path = os.Path(Files.readSymbolicLink(src.toNIO), src / up)
+object readLink extends Function1[Path, oslib.FilePath]{
+  def apply(src: Path): FilePath = oslib.FilePath(Files.readSymbolicLink(src.toNIO))
+  def absolute(src: Path): oslib.Path = oslib.Path(Files.readSymbolicLink(src.toNIO), src / up)
 }
 

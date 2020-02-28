@@ -1,4 +1,4 @@
-package os
+package oslib
 
 import java.io.IOException
 import java.nio.file
@@ -118,13 +118,13 @@ object walk {
     *                      simple file and not a folder
     */
   def attrs(path: Path,
-            skip: (Path, os.StatInfo) => Boolean = (_, _) => false,
+            skip: (Path, oslib.StatInfo) => Boolean = (_, _) => false,
             preOrder: Boolean = true,
             followLinks: Boolean = false,
             maxDepth: Int = Int.MaxValue,
-            includeTarget: Boolean = false): IndexedSeq[(Path, os.StatInfo)] = {
+            includeTarget: Boolean = false): IndexedSeq[(Path, oslib.StatInfo)] = {
     stream.attrs(path, skip, preOrder, followLinks, maxDepth, includeTarget)
-      .toArray[(Path, os.StatInfo)]
+      .toArray[(Path, oslib.StatInfo)]
   }
 
   object stream {
@@ -184,11 +184,11 @@ object walk {
       *                      simple file and not a folder
       */
     def attrs(path: Path,
-              skip: (Path, os.StatInfo) => Boolean = (_, _) => false,
+              skip: (Path, oslib.StatInfo) => Boolean = (_, _) => false,
               preOrder: Boolean = true,
               followLinks: Boolean = false,
               maxDepth: Int = Int.MaxValue,
-              includeTarget: Boolean = false): Generator[(Path, os.StatInfo)] = {
+              includeTarget: Boolean = false): Generator[(Path, oslib.StatInfo)] = {
 
       val opts0 = if (followLinks) Array[LinkOption]() else Array(LinkOption.NOFOLLOW_LINKS)
       val opts = new java.util.HashSet[FileVisitOption]
@@ -197,10 +197,10 @@ object walk {
       if (!Files.exists(pathNIO, opts0:_*)){
         throw new java.nio.file.NoSuchFileException(pathNIO.toString)
       }
-      new geny.Generator[(Path, os.StatInfo)]{
-        def generate(handleItem: ((Path, os.StatInfo)) => Generator.Action) = {
+      new geny.Generator[(Path, oslib.StatInfo)]{
+        def generate(handleItem: ((Path, oslib.StatInfo)) => Generator.Action) = {
           var currentAction: geny.Generator.Action = geny.Generator.Continue
-          val attrsStack = collection.mutable.Buffer.empty[os.StatInfo]
+          val attrsStack = collection.mutable.Buffer.empty[oslib.StatInfo]
           def actionToResult(action: Generator.Action) = action match{
             case Generator.Continue => FileVisitResult.CONTINUE
             case Generator.End =>
@@ -210,13 +210,13 @@ object walk {
           if (includeTarget && preOrder) handleItem(
             (
               path,
-              os.StatInfo.make(
+              oslib.StatInfo.make(
                 java.nio.file.Files.readAttributes(path.toNIO, classOf[BasicFileAttributes])
               )
             )
           )
 
-          if (os.isDir(path) || !includeTarget) {
+          if (oslib.isDir(path) || !includeTarget) {
             // Use `newDirectoryStream` to do the first-level traversal,
             // rather than relying on `walkFileTree`, because `walkFileTree`
             // does the unintuitive thing when the `path` being walked is a
@@ -232,7 +232,7 @@ object walk {
                 new FileVisitor[java.nio.file.Path] {
                   def preVisitDirectory(dir: file.Path, attrs: BasicFileAttributes) = {
                     val dirP = Path(dir.toAbsolutePath)
-                    val info = os.StatInfo.make(attrs)
+                    val info = oslib.StatInfo.make(attrs)
                     if (skip(dirP, info)) FileVisitResult.SKIP_SUBTREE
                     else actionToResult {
                       if (preOrder && dirP != path) handleItem((dirP, info))
@@ -245,7 +245,7 @@ object walk {
 
                   def visitFile(file: java.nio.file.Path, attrs: BasicFileAttributes) = {
                     val fileP = Path(file.toAbsolutePath)
-                    val info = os.StatInfo.make(attrs)
+                    val info = oslib.StatInfo.make(attrs)
                     actionToResult(
                       if (skip(fileP, info)) currentAction
                       else handleItem((fileP, info))
@@ -277,7 +277,7 @@ object walk {
           if (includeTarget && !preOrder) handleItem(
             (
               path,
-              os.StatInfo.make(
+              oslib.StatInfo.make(
                 java.nio.file.Files.readAttributes(path.toNIO, classOf[BasicFileAttributes])
               )
             )
